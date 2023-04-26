@@ -5,6 +5,7 @@ rm(list = ls())
 library(tidycensus)
 library(tidyverse)
 library(ggplot2)
+library(sf)
 
 vars <- load_variables(year = 2019, dataset = "acs5")
 
@@ -25,8 +26,24 @@ ATL_countyPopData_2020 <- get_acs(geography = "tract", variables = "B01003_001",
 ATL_countyPopData_2010 <- get_acs(geography = "tract", variables = "B01003_001",
                                   state = "GA", county = Counties, geometry = TRUE, year = 2010)
 
+ATL_pop20 <- ATL_countyPopData_2020 %>% select(GEOID, estimate)
 
-ggplot(data = ATL_countyPopData_2010) + geom_sf(aes(fill = estimate)) 
+ATL_pop10 <- ATL_countyPopData_2010 %>% select(GEOID, estimate)
 
-ggplot(data = ATL_countyPopData_2020) + geom_sf(aes(fill = estimate)) 
+
+colnames(ATL_pop10)[2] <- "population"
+
+colnames(ATL_pop20)[2] <- "population"
+
+
+ggplot(data = ATL_pop10) + geom_sf(aes(fill = population)) 
+
+ggplot(data = ATL_pop20) + geom_sf(aes(fill = population)) 
+
+st_write(ATL_pop10, "Atlanta_pop_byCensusTract_2010.geojson")
+st_write(ATL_pop20, "Atlanta_pop_byCensusTract_2020.geojson")
+
+st_crs(ATL_pop20)
+
+
 
