@@ -45,5 +45,21 @@ st_write(ATL_pop20, "Atlanta_pop_byCensusTract_2020.geojson")
 
 st_crs(ATL_pop20)
 
+ATL_MSA <- st_read("Metro Boundary/Metro Boundary/ATLMetroBoundary.shp")
+
+184000000000/5760000 # no of cells
+
+ATL_fishnet <- 
+  st_make_grid(ATL_MSA,
+               cellsize = 2400, 
+               square = TRUE) %>%
+  .[ATL_MSA] %>%            # clips the grid to the chesterBoundary file
+  st_sf() %>%
+  mutate(uniqueID = rownames(.))
+
+ggplot(data = ATL_fishnet) + geom_sf() 
+
+st_write(ATL_fishnet, "Atlanta_fishnet.geojson")
+
 
 
